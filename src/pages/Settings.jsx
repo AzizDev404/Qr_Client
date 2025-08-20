@@ -278,7 +278,7 @@ const Settings = () => {
         </p>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h4 className="text-sm font-medium text-blue-900 mb-2">
           Manual Backup
         </h4>
@@ -299,7 +299,7 @@ const Settings = () => {
             <span>Backup Yuklash</span>
           </button>
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <h4 className="text-sm font-medium text-red-900 mb-2">

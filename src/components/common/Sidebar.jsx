@@ -10,9 +10,9 @@ const Sidebar = () => {
 
   const navItems = [
     { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/qr-management', icon: QrCode, label: 'QR Kodlar' },
-    { path: '/analytics', icon: BarChart3, label: 'Analytics' },
-    { path: '/settings', icon: Settings, label: 'Sozlamalar' }
+    // { path: '/qr-management', icon: QrCode, label: 'QR Kodlar' },
+    // { path: '/analytics', icon: BarChart3, label: 'Analytics' },
+    // { path: '/settings', icon: Settings, label: 'Sozlamalar' } 
   ]
 
   return (
@@ -34,7 +34,7 @@ const Sidebar = () => {
       )}
 
       {/* Sidebar */}
-      <div className={`
+      {/* <div className={`
         fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
@@ -76,7 +76,7 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   )
 }

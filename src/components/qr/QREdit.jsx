@@ -201,13 +201,13 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
           ) : (
             <div className="space-y-6">
               {/* QR Code Preview */}
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex-shrink-0">
-                  <div className="w-48 h-48 bg-gray-50 rounded-lg flex items-center justify-center">
+              <div className="flex justify-center items-center gap-6">
+                <div className="">
+                  <div className="w-[400px] h-[400px] bg-gray-50 rounded-lg flex items-center justify-center">
                     <img
                       src={qrService.getQRImageUrl(qrId)}
                       alt={`QR Code for ${currentQR.title}`}
-                      className="w-44 h-44 object-contain"
+                      className="w-full h-full object-contain"
                       onError={(e) => {
                         e.target.style.display = 'none'
                       }}
@@ -215,7 +215,7 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                   </div>
                 </div>
                 
-                <div className="flex-1 space-y-4">
+                {/* <div className="flex-1 space-y-4">
                   <div>
                     <h3 className="text-lg font-medium text-gray-900">{currentQR.title}</h3>
                     {currentQR.description && (
@@ -248,7 +248,7 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
+                  
                   <div className="flex space-x-3">
                     <button
                       onClick={handlePreview}
@@ -265,7 +265,7 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                       <span>URL Nusxalash</span>
                     </button>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               {/* URLs */}
@@ -273,6 +273,12 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                 <h4 className="font-medium text-gray-900">QR Kod URLlari</h4>
                 
                 <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-gray-600">QR Image URL:</span>
+                    <div className="mt-1 p-2 bg-white rounded border text-xs font-mono break-all">
+                      {qrService.getQRImageUrl(qrId)}
+                    </div>
+                  </div>
                   <div>
                     <span className="text-gray-600">Scan URL:</span>
                     <div className="mt-1 p-2 bg-white rounded border text-xs font-mono break-all">
@@ -285,12 +291,7 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                       {qrService.getPreviewUrl(qrId)}
                     </div>
                   </div>
-                  <div>
-                    <span className="text-gray-600">QR Image URL:</span>
-                    <div className="mt-1 p-2 bg-white rounded border text-xs font-mono break-all">
-                      {qrService.getQRImageUrl(qrId)}
-                    </div>
-                  </div>
+                  
                 </div>
               </div>
 

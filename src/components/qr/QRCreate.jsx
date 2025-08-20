@@ -136,7 +136,7 @@ const QRCreate = ({ isOpen, onClose, onSuccess }) => {
           </div>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="text-sm font-medium text-blue-900 mb-2">Keyingi qadamlar:</h4>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• QR kod yaratiladi</li>
@@ -144,7 +144,7 @@ const QRCreate = ({ isOpen, onClose, onSuccess }) => {
             <li>• Matn, havola, fayl yoki kontakt ma'lumotlarini qo'shing</li>
             <li>• QR kod har doim bir xil, lekin content o'zgaradi</li>
           </ul>
-        </div>
+        </div> */}
 
         <div className="flex space-x-3 pt-4">
           <button

@@ -95,7 +95,7 @@ const TextContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
       </div>
 
       {/* Description */}
-      <div>
+      {/* <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
           Tavsif (ixtiyoriy)
         </label>
@@ -107,7 +107,7 @@ const TextContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="QR kod haqida qo'shimcha ma'lumot..."
         />
-      </div>
+      </div> */}
 
       {/* Preview */}
       {formData.text.trim() && (

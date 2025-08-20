@@ -204,7 +204,7 @@ const handleUpdate = async (contentData) => {
       )}
 
       {/* Current Content Info */}
-      {qr.currentContent && qr.currentContent.type !== 'empty' && (
+      {/* {qr.currentContent && qr.currentContent.type !== 'empty' && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="text-sm font-medium text-blue-900 mb-2">Joriy Content</h4>
           <div className="text-sm text-blue-800">
@@ -237,7 +237,7 @@ const handleUpdate = async (contentData) => {
             <p><strong>Yangilandi:</strong> {new Date(qr.currentContent.lastUpdated).toLocaleString('uz-UZ')}</p>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Content Type Selector */}
       <div>

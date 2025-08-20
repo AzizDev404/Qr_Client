@@ -197,7 +197,7 @@ const FileContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
       </div>
 
       {/* Description */}
-      <div>
+      {/* <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
           Tavsif (ixtiyoriy)
         </label>
@@ -209,7 +209,7 @@ const FileContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Fayl haqida qo'shimcha ma'lumot..."
         />
-      </div>
+      </div> */}
 
       {/* Submit */}
       <div className="flex justify-end">
@@ -245,14 +245,7 @@ const FileContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
         </div>
       )}
 
-      {/* Info */}
-      <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
-        <strong>Qo'llab-quvvatlanadigan formatlar:</strong><br />
-        • Rasmlar: JPEG, PNG, GIF, WebP <br />
-        • Dokumentlar: PDF, DOC, DOCX, TXT <br />
-        • Video: MP4, WebM <br />
-        • Maksimal hajm: 10MB
-      </div>
+  
     </form>
   )
 }

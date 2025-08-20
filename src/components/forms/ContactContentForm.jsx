@@ -333,7 +333,7 @@ const ContactContentForm = ({ qr, onUpdate }) => {
           </div>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="text-sm font-medium text-blue-900 mb-2">vCard haqida:</h4>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• Foydalanuvchilar kontaktni telefoniga saqlashlari mumkin</li>
@@ -341,7 +341,7 @@ const ContactContentForm = ({ qr, onUpdate }) => {
             <li>• Telefon, email va website avtomatik havola bo'ladi</li>
             <li>• QR kod skan qilinganda kontakt ma'lumotlari ko'rsatiladi</li>
           </ul>
-        </div>
+        </div> */}
 
         <button
           type="submit"

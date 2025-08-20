@@ -20,12 +20,12 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/" element={
                 <ProtectedRoute>
-                  <Dashboard />
+                 <QRManagement />
                 </ProtectedRoute>
               } />
               <Route path="/qr-management" element={
                 <ProtectedRoute>
-                  <QRManagement />
+                  <Dashboard />
                 </ProtectedRoute>
               } />
               <Route path="/analytics" element={
