@@ -185,7 +185,7 @@ const LinkContentForm = ({ qr, onUpdate }) => {
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <label htmlFor="linkTitle" className="block text-sm font-medium text-gray-700 mb-2">
             Havola Sarlavhasi
           </label>
@@ -205,9 +205,9 @@ const LinkContentForm = ({ qr, onUpdate }) => {
           <div className="mt-1 text-xs text-gray-500">
             {formData.linkTitle.length}/200 belgi
           </div>
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
           <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
             Tavsif
           </label>
@@ -227,7 +227,7 @@ const LinkContentForm = ({ qr, onUpdate }) => {
           <div className="mt-1 text-xs text-gray-500">
             {formData.description.length}/500 belgi
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-blue-50 rounded-lg p-4">
           <h4 className="text-sm font-medium text-blue-900 mb-2">Mashhur formatlar:</h4>
