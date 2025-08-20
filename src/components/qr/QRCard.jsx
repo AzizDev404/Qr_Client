@@ -214,7 +214,7 @@ const QRCard = ({ qr, onEdit, onDelete, onRestore }) => {
     <>
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
         {/* QR Code Image */}
-        <div className="p-4 bg-gray-50 flex justify-center">
+        {/* <div className="p-4 bg-gray-50 flex justify-center">
           {qrId ? (
             <img
               src={qrImageUrl || qrService.getQRImageUrl(qrId)}
@@ -230,7 +230,7 @@ const QRCard = ({ qr, onEdit, onDelete, onRestore }) => {
               <QrCode className="w-8 h-8 text-gray-400" />
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Content */}
         <div className="p-4">
