@@ -1,4 +1,4 @@
-// components/qr/QREdit.jsx - Debug versiyasi
+// components/qr/QREdit.jsx
 import React, { useState, useEffect } from 'react'
 import Modal from '../common/Modal'
 import QRContentEditor from './QRContentEditor'
@@ -15,62 +15,30 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
 
   const { success: showSuccess, error: showError } = useToast()
 
-  // Debug: QR obyektini log qilish
-  useEffect(() => {
-    console.log('QREdit received props:', { isOpen, qr })
-    if (qr) {
-      console.log('QR object details:', {
-        id: qr._id,
-        title: qr.title,
-        contentType: qr.contentType,
-        status: qr.status
-      })
-    }
-  }, [isOpen, qr])
-
   useEffect(() => {
     if (isOpen && qr) {
-      console.log('Loading QR details for ID:', qr._id)
       loadQRDetails()
     }
   }, [isOpen, qr])
 
   const loadQRDetails = async () => {
-    if (!qr?._id) {
-      console.error('No QR ID provided:', qr)
-      showError('QR ID topilmadi')
-      return
-    }
+    if (!qr?._id) return
     
     setLoading(true)
     try {
-      console.log('Fetching QR details for ID:', qr._id)
       const response = await qrService.getQRById(qr._id)
-      console.log('QR details loaded:', response)
       setQrData(response)
     } catch (error) {
-      console.error('Load QR details error:', error)
       showError('QR kod ma\'lumotlarini yuklashda xatolik')
+      console.error('Load QR details error:', error)
     } finally {
       setLoading(false)
     }
   }
 
   const handleContentUpdate = async (contentData) => {
-    // ID mavjudligini tekshirish
-    if (!qr?._id) {
-      console.error('Cannot update: No QR ID available')
-      showError('QR ID topilmadi - content yangilab bo\'lmaydi')
-      return
-    }
-
-    console.log('Updating content for QR ID:', qr._id)
-    console.log('Content data to send:', contentData)
-
     try {
       const response = await qrService.updateQRContent(qr._id, contentData)
-      console.log('Content update successful:', response)
-      
       setQrData(prev => ({
         ...prev,
         ...response
@@ -78,18 +46,12 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
       showSuccess('Content muvaffaqiyatli yangilandi')
       onSuccess(response)
     } catch (error) {
-      console.error('Content update failed:', error)
-      showError(error.message || 'Content yangilashda xatolik')
+      showError(error.response?.data?.message || 'Content yangilashda xatolik')
       throw error
     }
   }
 
   const handleCopyUrl = async () => {
-    if (!qr?._id) {
-      showError('QR ID topilmadi')
-      return
-    }
-    
     const url = qrService.getScanUrl(qr._id)
     const success = await copyToClipboard(url)
     if (success) {
@@ -100,11 +62,6 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
   }
 
   const handlePreview = () => {
-    if (!qr?._id) {
-      showError('QR ID topilmadi')
-      return
-    }
-    
     const previewUrl = qrService.getPreviewUrl(qr._id)
     window.open(previewUrl, '_blank')
   }
@@ -115,26 +72,7 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
     onClose()
   }
 
-  // QR obyekti mavjud emasligini tekshirish
-  if (!qr) {
-    console.warn('QREdit: No QR object provided')
-    return null
-  }
-
-  // QR ID mavjud emasligini tekshirish
-  if (!qr._id) {
-    console.error('QREdit: QR object has no _id:', qr)
-    return (
-      <Modal isOpen={isOpen} onClose={handleClose} size="sm">
-        <div className="text-center py-8">
-          <p className="text-red-600 mb-4">QR kod ID topilmadi</p>
-          <button onClick={handleClose} className="btn-secondary">
-            Yopish
-          </button>
-        </div>
-      </Modal>
-    )
-  }
+  if (!qr) return null
 
   return (
     <Modal
@@ -143,11 +81,6 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
       title={`QR Kod Tahrirlash: ${qr.title}`}
       size="lg"
     >
-      {/* Debug panel - production da olib tashlash */}
-      <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
-        <strong>Debug Info:</strong> QR ID: {qr._id}, Title: {qr.title}
-      </div>
-
       {loading ? (
         <div className="flex justify-center py-8">
           <LoadingSpinner size="lg" />
