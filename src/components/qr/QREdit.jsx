@@ -274,23 +274,23 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                 
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-gray-600">QR Image URL:</span>
+                    <span className="text-gray-600">QRCode rasmi URL:</span>
                     <div className="mt-1 p-2 bg-white rounded border text-xs font-mono break-all">
                       {qrService.getQRImageUrl(qrId)}
                     </div>
                   </div>
                   <div>
-                    <span className="text-gray-600">Scan URL:</span>
+                    <span className="text-gray-600">QRcode yo'naltirilgan URL:</span>
                     <div className="mt-1 p-2 bg-white rounded border text-xs font-mono break-all">
                       {qrService.getScanUrl(qrId)}
                     </div>
                   </div>
-                  <div>
+                  {/* <div>
                     <span className="text-gray-600">Preview URL:</span>
                     <div className="mt-1 p-2 bg-white rounded border text-xs font-mono break-all">
                       {qrService.getPreviewUrl(qrId)}
                     </div>
-                  </div>
+                  </div> */}
                   
                 </div>
               </div>
