@@ -1,4 +1,4 @@
-// components/auth/LoginForm.jsx
+// components/auth/LoginForm.jsx - Password hide/show ishlaydi
 import React, { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
@@ -61,10 +61,17 @@ const LoginForm = () => {
         showError(result.message || 'Login xatolik yuz berdi')
       }
     } catch (error) {
-      showError('Login xatolik yuz berdi')
+      console.error('Login error:', error)
+      showError(error.message || 'Login xatolik yuz berdi')
     } finally {
       setLoading(false)
     }
+  }
+
+  const togglePasswordVisibility = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setShowPassword(!showPassword)
   }
 
   return (
@@ -82,8 +89,9 @@ const LoginForm = () => {
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           <div className="space-y-4">
+            {/* Username Field */}
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
                 Username
@@ -105,6 +113,7 @@ const LoginForm = () => {
                     ${errors.username ? 'border-red-500' : 'border-gray-300'}
                     placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none 
                     focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm
+                    transition-colors
                   `}
                   placeholder="Username kiriting"
                 />
@@ -114,6 +123,7 @@ const LoginForm = () => {
               )}
             </div>
 
+            {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Parol
@@ -131,22 +141,25 @@ const LoginForm = () => {
                   value={formData.password}
                   onChange={handleChange}
                   className={`
-                    appearance-none relative block w-full pl-10 pr-10 py-2 border
+                    appearance-none relative block w-full pl-10 pr-12 py-2 border
                     ${errors.password ? 'border-red-500' : 'border-gray-300'}
                     placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none 
                     focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm
+                    transition-colors
                   `}
                   placeholder="Parol kiriting"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer hover:bg-gray-100 rounded-r-lg transition-colors"
+                  onClick={togglePasswordVisibility}
+                  onMouseDown={(e) => e.preventDefault()} // Form submit bo'lmasligi uchun
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
+                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
+                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
                   )}
                 </button>
               </div>
@@ -156,6 +169,7 @@ const LoginForm = () => {
             </div>
           </div>
 
+          {/* Submit Button */}
           <div>
             <button
               type="submit"
@@ -163,17 +177,16 @@ const LoginForm = () => {
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? (
-                <LoadingSpinner size="sm" />
+                <div className="flex items-center space-x-2">
+                  <LoadingSpinner size="sm" />
+                  <span>Tekshirilmoqda...</span>
+                </div>
               ) : (
                 'Kirish'
               )}
             </button>
           </div>
         </form>
-        
-        <div className="text-center text-xs text-gray-500">
-          <p>Default: admin / admin123</p>
-        </div>
       </div>
     </div>
   )
