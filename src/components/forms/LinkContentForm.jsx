@@ -229,7 +229,7 @@ const LinkContentForm = ({ qr, onUpdate }) => {
           </div>
         </div> */}
 
-        <div className="bg-blue-50 rounded-lg p-4">
+        {/* <div className="bg-blue-50 rounded-lg p-4">
           <h4 className="text-sm font-medium text-blue-900 mb-2">Mashhur formatlar:</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-blue-800">
             <div>• Website: example.com</div>
@@ -242,7 +242,7 @@ const LinkContentForm = ({ qr, onUpdate }) => {
           <p className="text-xs text-blue-700 mt-2">
             * https:// avtomatik qo'shiladi
           </p>
-        </div>
+        </div> */}
 
         <button
           type="submit"
