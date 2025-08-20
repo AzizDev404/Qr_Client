@@ -55,7 +55,7 @@ const TextContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Text Input */}
       <div>
-        <label htmlFor="text" className="block text-sm font-medium text-gray-700 mb-2">
+        {/* <label htmlFor="text" className="block text-sm font-medium text-gray-700 mb-2">
           Matn * 
           <span className="text-gray-500 font-normal">
             ({formData.text.length}/2000)
@@ -72,10 +72,10 @@ const TextContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
           `}
           placeholder="QR kod skanlanganda ko'rsatiladigan matn..."
           required
-        />
+        /> */}
         
         {/* Character counter */}
-        <div className="flex justify-between items-center mt-1">
+        {/* <div className="flex justify-between items-center mt-1">
           <div>
             {error && (
               <div className="flex items-center text-red-600">
@@ -91,7 +91,7 @@ const TextContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
             {formData.text.length > 1800 && '⚠️ '} 
             {formData.text.length}/2000
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Description */}
@@ -126,7 +126,7 @@ const TextContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
       )}
 
       {/* Submit Button */}
-      <div className="flex justify-end">
+      {/* <div className="flex justify-end">
         <button
           type="submit"
           disabled={isLoading || !formData.text.trim()}
@@ -144,20 +144,7 @@ const TextContentForm = ({ qr, onUpdate, isLoading, contentType }) => {
             </>
           )}
         </button>
-      </div>
-
-      {/* Help Text */}
-      <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded">
-        <strong>Maslahat:</strong>
-        <br />
-        • Qisqa va aniq matn yozing
-        <br />
-        • Telefon raqamlari, emaillar, web saytlar avtomatik link bo'ladi
-        <br />
-        • Emoji va maxsus belgilar qo'llab-quvvatlanadi 📱✨
-        <br />
-        • Maksimal: 2000 belgi
-      </div>
+      </div> */}
     </form>
   )
 }

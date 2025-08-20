@@ -183,10 +183,10 @@ const QRCard = ({ qr, onEdit, onDelete, onRestore }) => {
     if (!qrContentType || qrContentType === 'empty') return null
     
     const labels = {
-      text: 'Matn',
+      // text: 'Matn',
       link: 'Havola', 
       file: 'Fayl',
-      contact: 'Kontakt',
+      // contact: 'Kontakt',
       empty: 'Bo\'sh'
     }
 
@@ -241,34 +241,34 @@ const QRCard = ({ qr, onEdit, onDelete, onRestore }) => {
             {getStatusBadge()}
           </div>
 
-          {qrDescription && (
+          {/* {qrDescription && (
             <p className="text-sm text-gray-600 mb-3 line-clamp-2" title={qrDescription}>
               {qrDescription}
             </p>
-          )}
+          )} */}
 
           {/* Content preview */}
           {qrContentType && qrContentType !== 'empty' && qr?.currentContent && (
             <div className="text-sm text-gray-600 mb-3">
-              {qrContentType === 'text' && qr.currentContent.text && (
+              {/* {qrContentType === 'text' && qr.currentContent.text && (
                 <p className="line-clamp-2">{qr.currentContent.text}</p>
-              )}
-              {qrContentType === 'link' && qr.currentContent.url && (
+              )} */}
+              {/* {qrContentType === 'link' && qr.currentContent.url && (
                 <p className="line-clamp-1 break-all">{qr.currentContent.linkTitle || qr.currentContent.url}</p>
               )}
               {qrContentType === 'file' && qr.currentContent.originalName && (
                 <p className="line-clamp-1">{qr.currentContent.originalName}</p>
-              )}
-              {qrContentType === 'contact' && qr.currentContent.contactName && (
+              )} */}
+              {/* {qrContentType === 'contact' && qr.currentContent.contactName && (
                 <p className="line-clamp-1">{qr.currentContent.contactName}</p>
-              )}
+              )} */}
             </div>
           )}
 
           {/* Badges */}
-          <div className="flex flex-wrap gap-2 mb-3">
-            {getContentTypeBadge()}
-          </div>
+            {/* <div className="flex flex-wrap gap-2 mb-3">
+              {getContentTypeBadge()}
+            </div> */}
 
           {/* Stats */}
           <div className="flex items-center justify-between text-sm text-gray-500 mb-4">

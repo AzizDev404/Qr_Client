@@ -89,13 +89,6 @@ const QRManagement = () => {
         </div>
       </div>
 
-      {/* Debug info panel */}
-      <div className="fixed bottom-4 right-4 bg-gray-800 text-white p-2 rounded text-xs max-w-xs">
-        <div>Create Modal: {showCreateModal ? 'Open' : 'Closed'}</div>
-        <div>Editing QR: {editingQR ? editingQR._id : 'None'}</div>
-        <div>Refresh: {refreshTrigger}</div>
-      </div>
-
       {/* Modals */}
       <QRCreate 
         isOpen={showCreateModal}

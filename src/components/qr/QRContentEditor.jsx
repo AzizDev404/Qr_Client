@@ -26,12 +26,12 @@ const QRContentEditor = ({ qr, onUpdate }) => {
   }, [qr])
 
   const contentTypeOptions = [
-    {
-      type: CONTENT_TYPES.TEXT,
-      label: CONTENT_TYPE_LABELS[CONTENT_TYPES.TEXT],
-      icon: FileText,
-      description: 'Matn, xabar yoki announcement'
-    },
+    // {
+    //   type: CONTENT_TYPES.TEXT,
+    //   label: CONTENT_TYPE_LABELS[CONTENT_TYPES.TEXT],
+    //   icon: FileText,
+    //   description: 'Matn, xabar yoki announcement'
+    // },
     {
       type: CONTENT_TYPES.LINK,
       label: CONTENT_TYPE_LABELS[CONTENT_TYPES.LINK],
@@ -44,12 +44,12 @@ const QRContentEditor = ({ qr, onUpdate }) => {
       icon: Upload,
       description: 'PDF, rasm, video yoki dokument'
     },
-    {
-      type: CONTENT_TYPES.CONTACT,
-      label: CONTENT_TYPE_LABELS[CONTENT_TYPES.CONTACT],
-      icon: User,
-      description: 'Kontakt ma\'lumotlari (vCard)'
-    }
+    // {
+    //   type: CONTENT_TYPES.CONTACT,
+    //   label: CONTENT_TYPE_LABELS[CONTENT_TYPES.CONTACT],
+    //   icon: User,
+    //   description: 'Kontakt ma\'lumotlari (vCard)'
+    // }
   ]
 
 const handleUpdate = async (contentData) => {
@@ -143,14 +143,10 @@ const handleUpdate = async (contentData) => {
     }
 
     switch (selectedType) {
-      case CONTENT_TYPES.TEXT:
-        return <TextContentForm {...commonProps} />
       case CONTENT_TYPES.LINK:
         return <LinkContentForm {...commonProps} />
       case CONTENT_TYPES.FILE:
         return <FileContentForm {...commonProps} />
-      case CONTENT_TYPES.CONTACT:
-        return <ContactContentForm {...commonProps} />
       default:
         console.warn('QRContentEditor: Unknown content type:', selectedType)
         return <TextContentForm {...commonProps} />
