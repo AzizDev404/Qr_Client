@@ -1,57 +1,29 @@
-// components/qr/QRContentEditor.jsx - Backend formatiga moslashtirilgan va empty content type fix
+// components/qr/QRContentEditor.jsx - Backend formatiga moslashtirilgan
 import React, { useState, useEffect } from 'react'
 import { CONTENT_TYPES, CONTENT_TYPE_LABELS } from '../../utils/constants'
 import TextContentForm from '../forms/TextContentForm'
 import LinkContentForm from '../forms/LinkContentForm'
 import FileContentForm from '../forms/FileContentForm'
 import ContactContentForm from '../forms/ContactContentForm'
-import { FileText, Link, Upload, User, AlertCircle, CheckCircle, Inbox } from 'lucide-react'
+import { FileText, Link, Upload, User, AlertCircle, CheckCircle } from 'lucide-react'
 
 const QRContentEditor = ({ qr, onUpdate }) => {
-  // Backend currentContent.type ni olish - empty va noma'lum typelarni handle qilish
-  const [selectedType, setSelectedType] = useState(() => {
-    // Backend response structure: {success: true, qr: {...}}
-    const actualQR = qr?.qr || qr  // Handle both wrapped and direct qr object
-    const backendType = actualQR?.currentContent?.type
-    
-    // Agar backend 'empty' yoki noma'lum type yuborsa, TEXT ga default qilish
-    if (!backendType || backendType === 'empty' || !Object.values(CONTENT_TYPES).includes(backendType)) {
-      return CONTENT_TYPES.TEXT
-    }
-    return backendType
-  })
-  
+  // Backend currentContent.type ni olish
+  const [selectedType, setSelectedType] = useState(
+    qr?.currentContent?.type || CONTENT_TYPES.TEXT
+  )
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
 
-  // QR content type ni defensive tarzda handle qilish
+  // Debug: QR obyektini log qilish
   useEffect(() => {
     console.log('QRContentEditor received QR:', qr)
-    
-    // Backend response structure handle qilish
-    const actualQR = qr?.qr || qr  // Handle both wrapped and direct qr object
-    const backendType = actualQR?.currentContent?.type
-    
-    console.log('Actual QR object:', actualQR)
-    console.log('Backend content type:', backendType)
-    
-    // Empty yoki noma'lum content typelarni handle qilish
-    if (!backendType || backendType === 'empty' || !Object.values(CONTENT_TYPES).includes(backendType)) {
-      console.log('Backend content type is empty/invalid, defaulting to TEXT:', backendType)
-      // Har doim TEXT ga set qilish, chunki empty case bor
-      if (selectedType !== CONTENT_TYPES.TEXT) {
-        setSelectedType(CONTENT_TYPES.TEXT)
-      }
-      return
+    if (qr?.currentContent?.type && qr.currentContent.type !== selectedType) {
+      console.log('Updating selectedType from QR currentContent:', qr.currentContent.type)
+      setSelectedType(qr.currentContent.type)
     }
-    
-    // Faqat farqli bo'lsa update qilish
-    if (backendType !== selectedType) {
-      console.log('Updating selectedType from QR currentContent:', backendType)
-      setSelectedType(backendType)
-    }
-  }, [qr, selectedType])
+  }, [qr])
 
   const contentTypeOptions = [
     {
@@ -126,44 +98,13 @@ const QRContentEditor = ({ qr, onUpdate }) => {
     setSuccess(null)
   }
 
-  // QR contentining empty yoki mavjud emasligini tekshirish
-  const isContentEmpty = () => {
-    // Backend response structure handle qilish
-    const actualQR = qr?.qr || qr
-    const currentContent = actualQR?.currentContent
-    
-    return !currentContent || 
-           !currentContent.type || 
-           currentContent.type === 'empty' ||
-           !Object.values(CONTENT_TYPES).includes(currentContent.type)
-  }
-
-  // Empty content uchun component
-  const renderEmptyState = () => (
-    <div className="text-center py-8">
-      <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-        <Inbox className="w-8 h-8 text-gray-400" />
-      </div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">
-        QR kod hali bo'sh
-      </h3>
-      <p className="text-gray-600 mb-4">
-        Yuqoridagi content turlaridan birini tanlab, ma'lumot qo'shing
-      </p>
-      <p className="text-sm text-gray-500">
-        Foydalanuvchilar QR kodni scan qilganda bu content ko'rinadi
-      </p>
-    </div>
-  )
-
   // Content formani render qilish
   const renderContentForm = () => {
-    // Backend response structure handle qilish
-    const actualQR = qr?.qr || qr
-    const currentContent = actualQR?.currentContent || {}
+    // Backend currentContent dan ma'lumotlarni frontend formatiga o'tkazish
+    const currentContent = qr?.currentContent || {}
     
     const normalizedQR = {
-      ...actualQR,
+      ...qr,
       // Backend currentContent ichidagi fieldlarni root levelga ko'chirish
       contentType: currentContent.type,
       text: currentContent.text,
@@ -188,11 +129,6 @@ const QRContentEditor = ({ qr, onUpdate }) => {
       contentType: selectedType
     }
 
-    // Empty yoki noma'lum content type bo'lsa, empty state ko'rsatish
-    if (isContentEmpty() || selectedType === 'empty' || !Object.values(CONTENT_TYPES).includes(selectedType)) {
-      return renderEmptyState()
-    }
-
     switch (selectedType) {
       case CONTENT_TYPES.TEXT:
         return <TextContentForm {...commonProps} />
@@ -203,9 +139,8 @@ const QRContentEditor = ({ qr, onUpdate }) => {
       case CONTENT_TYPES.CONTACT:
         return <ContactContentForm {...commonProps} />
       default:
-        // Bu yerga hech qachon kelmaydi, lekin safety uchun
-        console.warn('QRContentEditor: Fallback to empty state for type:', selectedType)
-        return renderEmptyState()
+        console.warn('QRContentEditor: Unknown content type:', selectedType)
+        return <TextContentForm {...commonProps} />
     }
   }
 
@@ -221,11 +156,8 @@ const QRContentEditor = ({ qr, onUpdate }) => {
     )
   }
 
-  // Backend response structure handle qilish
-  const actualQR = qr?.qr || qr
-  
   // QR ID mavjud emasligini tekshirish
-  if (!actualQR || (!actualQR.id && !actualQR._id)) {
+  if (!qr.id && !qr._id) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <div className="flex items-center space-x-2">
@@ -241,12 +173,9 @@ const QRContentEditor = ({ qr, onUpdate }) => {
       {/* Debug Info - Production da olib tashlash */}
       {process.env.NODE_ENV === 'development' && (
         <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
-          <strong>Debug:</strong> QR ID: {actualQR.id || actualQR._id}, 
-          Selected Type: {selectedType}, 
-          Backend Type: {actualQR?.currentContent?.type || 'undefined'},
-          Is Empty: {isContentEmpty().toString()},
-          Valid Types: {Object.values(CONTENT_TYPES).join(', ')},
-          Response Structure: {qr?.success ? 'Wrapped' : 'Direct'}
+          <strong>Debug:</strong> QR ID: {qr.id || qr._id}, 
+          Current Type: {selectedType}, 
+          Backend Type: {qr?.currentContent?.type}
         </div>
       )}
 
@@ -270,40 +199,38 @@ const QRContentEditor = ({ qr, onUpdate }) => {
         </div>
       )}
 
-      {/* Current Content Info - faqat valid content mavjud bo'lsa ko'rsatish */}
-      {!isContentEmpty() && (
+      {/* Current Content Info */}
+      {qr.currentContent && qr.currentContent.type !== 'empty' && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <h4 className="text-sm font-medium text-blue-900 mb-2">Joriy Content</h4>
           <div className="text-sm text-blue-800">
-            <p><strong>Tur:</strong> {CONTENT_TYPE_LABELS[actualQR.currentContent.type] || actualQR.currentContent.type}</p>
+            <p><strong>Tur:</strong> {CONTENT_TYPE_LABELS[qr.currentContent.type] || qr.currentContent.type}</p>
             
-            {actualQR.currentContent.type === 'text' && actualQR.currentContent.text && (
-              <p><strong>Matn:</strong> {actualQR.currentContent.text.length > 100 
-                ? actualQR.currentContent.text.substring(0, 100) + '...' 
-                : actualQR.currentContent.text}</p>
+            {qr.currentContent.type === 'text' && qr.currentContent.text && (
+              <p><strong>Matn:</strong> {qr.currentContent.text.length > 100 
+                ? qr.currentContent.text.substring(0, 100) + '...' 
+                : qr.currentContent.text}</p>
             )}
             
-            {actualQR.currentContent.type === 'link' && actualQR.currentContent.url && (
-              <p><strong>URL:</strong> <span className="break-all">{actualQR.currentContent.url}</span></p>
+            {qr.currentContent.type === 'link' && qr.currentContent.url && (
+              <p><strong>URL:</strong> <span className="break-all">{qr.currentContent.url}</span></p>
             )}
             
-            {actualQR.currentContent.type === 'file' && actualQR.currentContent.originalName && (
-              <p><strong>Fayl:</strong> {actualQR.currentContent.originalName} 
-                {actualQR.currentContent.fileSize && ` (${Math.round(actualQR.currentContent.fileSize / 1024)} KB)`}</p>
+            {qr.currentContent.type === 'file' && qr.currentContent.originalName && (
+              <p><strong>Fayl:</strong> {qr.currentContent.originalName} 
+                {qr.currentContent.fileSize && ` (${Math.round(qr.currentContent.fileSize / 1024)} KB)`}</p>
             )}
             
-            {actualQR.currentContent.type === 'contact' && actualQR.currentContent.contactName && (
-              <p><strong>Kontakt:</strong> {actualQR.currentContent.contactName} 
-                {actualQR.currentContent.phone && ` (${actualQR.currentContent.phone})`}</p>
+            {qr.currentContent.type === 'contact' && qr.currentContent.contactName && (
+              <p><strong>Kontakt:</strong> {qr.currentContent.contactName} 
+                {qr.currentContent.phone && ` (${qr.currentContent.phone})`}</p>
             )}
             
-            {actualQR.currentContent.description && (
-              <p><strong>Tavsif:</strong> {actualQR.currentContent.description}</p>
+            {qr.currentContent.description && (
+              <p><strong>Tavsif:</strong> {qr.currentContent.description}</p>
             )}
             
-            {actualQR.currentContent.lastUpdated && (
-              <p><strong>Yangilandi:</strong> {new Date(actualQR.currentContent.lastUpdated).toLocaleString('uz-UZ')}</p>
-            )}
+            <p><strong>Yangilandi:</strong> {new Date(qr.currentContent.lastUpdated).toLocaleString('uz-UZ')}</p>
           </div>
         </div>
       )}
@@ -317,7 +244,7 @@ const QRContentEditor = ({ qr, onUpdate }) => {
           {contentTypeOptions.map((option) => {
             const Icon = option.icon
             const isSelected = selectedType === option.type
-            const isCurrent = !isContentEmpty() && actualQR?.currentContent?.type === option.type
+            const isCurrent = qr?.currentContent?.type === option.type
                         
             return (
               <button
@@ -372,7 +299,7 @@ const QRContentEditor = ({ qr, onUpdate }) => {
         </div>
       </div>
 
-      {/* Content Form yoki Empty State */}
+      {/* Content Form */}
       <div className="border-t border-gray-200 pt-6">
         {renderContentForm()}
       </div>

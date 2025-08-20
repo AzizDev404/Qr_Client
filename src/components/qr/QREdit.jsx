@@ -1,4 +1,4 @@
-// components/qr/QREdit.jsx - Tuzatilgan versiya
+// components/qr/QREdit.jsx - Console warning o'chirilgan versiya
 import React, { useState, useEffect } from 'react'
 import Modal from '../common/Modal'
 import QRContentEditor from './QRContentEditor'
@@ -18,35 +18,12 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
   // QR ID ni olish - turli formatlarni qo'llab-quvvatlash
   const getQRId = (qrObj) => {
     if (!qrObj) return null
-    const id = qrObj.id || qrObj._id
-    console.log('Getting QR ID from object:', { 
-      object: qrObj, 
-      foundId: id,
-      hasId: !!qrObj.id,
-      has_id: !!qrObj._id 
-    })
-    return id || null
+    return qrObj.id || qrObj._id || null
   }
-
-  // Debug: QR obyektini log qilish
-  useEffect(() => {
-    console.log('QREdit received props:', { isOpen, qr })
-    if (qr) {
-      const qrId = getQRId(qr)
-      console.log('QR object details:', {
-        id: qrId,
-        title: qr.title,
-        contentType: qr.contentType,
-        status: qr.status,
-        rawObject: qr
-      })
-    }
-  }, [isOpen, qr])
 
   useEffect(() => {
     if (isOpen && qr) {
       const qrId = getQRId(qr)
-      console.log('Loading QR details for ID:', qrId)
       if (qrId) {
         loadQRDetails(qrId)
       } else {
@@ -66,16 +43,14 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
     try {
       console.log('Fetching QR details for ID:', qrId)
       
-      // Debug - backend response ni to'liq ko'rish
-      console.log('=== DEBUGGING QR FETCH ===')
-      const debugResponse = await qrService.debugGetQRById(qrId)
-      console.log('Debug response:', debugResponse)
-      
       const response = await qrService.getQRById(qrId)
       console.log('QR details loaded:', response)
       
-      if (response) {
-        setQrData(response)
+      // Backend {success: true, qr: {...}} formatda javob qaytaradi
+      const qrData = response?.qr || response
+      
+      if (qrData) {
+        setQrData(qrData)
       } else {
         showError('QR kod ma\'lumotlari topilmadi')
       }
@@ -90,29 +65,25 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
   const handleContentUpdate = async (contentData) => {
     const qrId = getQRId(qr)
     
-    // ID mavjudligini tekshirish
     if (!qrId) {
-      console.error('Cannot update: No QR ID available')
       showError('QR ID topilmadi - content yangilab bo\'lmaydi')
       return
     }
 
-    console.log('Updating content for QR ID:', qrId)
-    console.log('Content data to send:', contentData)
-
     try {
       const response = await qrService.updateQRContent(qrId, contentData)
-      console.log('Content update successful:', response)
       
-      if (response) {
-        setQrData(response)
+      // Backend {success: true, qr: {...}} formatda javob qaytaradi  
+      const qrData = response?.qr || response
+      
+      if (qrData) {
+        setQrData(qrData)
         showSuccess('Content muvaffaqiyatli yangilandi')
-        onSuccess(response)
+        onSuccess(qrData)
       } else {
         throw new Error('Server javob bermadi')
       }
     } catch (error) {
-      console.error('Content update failed:', error)
       showError(error.message || 'Content yangilashda xatolik')
       throw error
     }
@@ -151,33 +122,12 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
     onClose()
   }
 
-  // QR obyekti mavjud emasligini tekshirish
-  if (!qr) {
-    console.warn('QREdit: No QR object provided')
+  // Agar QR obyekti yoki ID yo'q bo'lsa, hech narsa render qilma
+  if (!qr || !getQRId(qr)) {
     return null
   }
 
-  // QR ID mavjud emasligini tekshirish
   const qrId = getQRId(qr)
-  if (!qrId) {
-    console.error('QREdit: QR object has no valid ID:', qr)
-    return (
-      <Modal isOpen={isOpen} onClose={handleClose} size="sm">
-        <div className="text-center py-8">
-          <div className="mb-4 p-3 bg-red-50 rounded text-sm">
-            <strong>Debug Info:</strong><br />
-            QR Object: {JSON.stringify(qr, null, 2)}
-          </div>
-          <p className="text-red-600 mb-4">QR kod ID topilmadi</p>
-          <button onClick={handleClose} className="btn-secondary">
-            Yopish
-          </button>
-        </div>
-      </Modal>
-    )
-  }
-
-  // QR ma'lumotlari uchun aktual obyekt
   const currentQR = qrData || qr
 
   return (
@@ -187,11 +137,6 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
       title={`QR Kod Tahrirlash: ${currentQR.title || 'Nomsiz'}`}
       size="lg"
     >
-      {/* Debug panel - production da olib tashlash */}
-      <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
-        <strong>Debug Info:</strong> QR ID: {qrId}, Title: {currentQR.title}, Loading: {loading.toString()}
-      </div>
-
       {loading ? (
         <div className="flex justify-center py-8">
           <LoadingSpinner size="lg" />
@@ -243,7 +188,6 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                       alt={`QR Code for ${currentQR.title}`}
                       className="w-44 h-44 object-contain"
                       onError={(e) => {
-                        console.error('QR image load error for ID:', qrId)
                         e.target.style.display = 'none'
                       }}
                     />
