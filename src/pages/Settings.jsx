@@ -16,10 +16,11 @@ const Settings = () => {
   const [showBackupConfirm, setShowBackupConfirm] = useState(false)
   
   const { success: showSuccess, error: showError } = useToast()
+  const API = import.meta.env.VITE_API_BASE_URL
 
   const [settings, setSettings] = useState({
     siteName: 'Dynamic QR System',
-    baseUrl: 'http://localhost:3001',
+    baseUrl: API,
     maxFileSize: '100',
     allowedFileTypes: 'pdf,doc,jpg,png,mp4',
     emailNotifications: true,

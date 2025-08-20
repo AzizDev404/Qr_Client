@@ -1,4 +1,4 @@
-// components/qr/QREdit.jsx
+// components/qr/QREdit.jsx - Tuzatilgan versiya
 import React, { useState, useEffect } from 'react'
 import Modal from '../common/Modal'
 import QRContentEditor from './QRContentEditor'
@@ -15,44 +15,117 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
 
   const { success: showSuccess, error: showError } = useToast()
 
+  // QR ID ni olish - turli formatlarni qo'llab-quvvatlash
+  const getQRId = (qrObj) => {
+    if (!qrObj) return null
+    const id = qrObj.id || qrObj._id
+    console.log('Getting QR ID from object:', { 
+      object: qrObj, 
+      foundId: id,
+      hasId: !!qrObj.id,
+      has_id: !!qrObj._id 
+    })
+    return id || null
+  }
+
+  // Debug: QR obyektini log qilish
   useEffect(() => {
-    if (isOpen && qr) {
-      loadQRDetails()
+    console.log('QREdit received props:', { isOpen, qr })
+    if (qr) {
+      const qrId = getQRId(qr)
+      console.log('QR object details:', {
+        id: qrId,
+        title: qr.title,
+        contentType: qr.contentType,
+        status: qr.status,
+        rawObject: qr
+      })
     }
   }, [isOpen, qr])
 
-  const loadQRDetails = async () => {
-    if (!qr?._id) return
+  useEffect(() => {
+    if (isOpen && qr) {
+      const qrId = getQRId(qr)
+      console.log('Loading QR details for ID:', qrId)
+      if (qrId) {
+        loadQRDetails(qrId)
+      } else {
+        showError('QR kod ID topilmadi')
+      }
+    }
+  }, [isOpen, qr])
+
+  const loadQRDetails = async (qrId) => {
+    if (!qrId) {
+      console.error('No QR ID provided for loading details')
+      showError('QR ID topilmadi')
+      return
+    }
     
     setLoading(true)
     try {
-      const response = await qrService.getQRById(qr._id)
-      setQrData(response)
+      console.log('Fetching QR details for ID:', qrId)
+      
+      // Debug - backend response ni to'liq ko'rish
+      console.log('=== DEBUGGING QR FETCH ===')
+      const debugResponse = await qrService.debugGetQRById(qrId)
+      console.log('Debug response:', debugResponse)
+      
+      const response = await qrService.getQRById(qrId)
+      console.log('QR details loaded:', response)
+      
+      if (response) {
+        setQrData(response)
+      } else {
+        showError('QR kod ma\'lumotlari topilmadi')
+      }
     } catch (error) {
-      showError('QR kod ma\'lumotlarini yuklashda xatolik')
       console.error('Load QR details error:', error)
+      showError(error.message || 'QR kod ma\'lumotlarini yuklashda xatolik')
     } finally {
       setLoading(false)
     }
   }
 
   const handleContentUpdate = async (contentData) => {
+    const qrId = getQRId(qr)
+    
+    // ID mavjudligini tekshirish
+    if (!qrId) {
+      console.error('Cannot update: No QR ID available')
+      showError('QR ID topilmadi - content yangilab bo\'lmaydi')
+      return
+    }
+
+    console.log('Updating content for QR ID:', qrId)
+    console.log('Content data to send:', contentData)
+
     try {
-      const response = await qrService.updateQRContent(qr._id, contentData)
-      setQrData(prev => ({
-        ...prev,
-        ...response
-      }))
-      showSuccess('Content muvaffaqiyatli yangilandi')
-      onSuccess(response)
+      const response = await qrService.updateQRContent(qrId, contentData)
+      console.log('Content update successful:', response)
+      
+      if (response) {
+        setQrData(response)
+        showSuccess('Content muvaffaqiyatli yangilandi')
+        onSuccess(response)
+      } else {
+        throw new Error('Server javob bermadi')
+      }
     } catch (error) {
-      showError(error.response?.data?.message || 'Content yangilashda xatolik')
+      console.error('Content update failed:', error)
+      showError(error.message || 'Content yangilashda xatolik')
       throw error
     }
   }
 
   const handleCopyUrl = async () => {
-    const url = qrService.getScanUrl(qr._id)
+    const qrId = getQRId(qr)
+    if (!qrId) {
+      showError('QR ID topilmadi')
+      return
+    }
+    
+    const url = qrService.getScanUrl(qrId)
     const success = await copyToClipboard(url)
     if (success) {
       showSuccess('URL nusxalandi')
@@ -62,7 +135,13 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
   }
 
   const handlePreview = () => {
-    const previewUrl = qrService.getPreviewUrl(qr._id)
+    const qrId = getQRId(qr)
+    if (!qrId) {
+      showError('QR ID topilmadi')
+      return
+    }
+    
+    const previewUrl = qrService.getPreviewUrl(qrId)
     window.open(previewUrl, '_blank')
   }
 
@@ -72,15 +151,47 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
     onClose()
   }
 
-  if (!qr) return null
+  // QR obyekti mavjud emasligini tekshirish
+  if (!qr) {
+    console.warn('QREdit: No QR object provided')
+    return null
+  }
+
+  // QR ID mavjud emasligini tekshirish
+  const qrId = getQRId(qr)
+  if (!qrId) {
+    console.error('QREdit: QR object has no valid ID:', qr)
+    return (
+      <Modal isOpen={isOpen} onClose={handleClose} size="sm">
+        <div className="text-center py-8">
+          <div className="mb-4 p-3 bg-red-50 rounded text-sm">
+            <strong>Debug Info:</strong><br />
+            QR Object: {JSON.stringify(qr, null, 2)}
+          </div>
+          <p className="text-red-600 mb-4">QR kod ID topilmadi</p>
+          <button onClick={handleClose} className="btn-secondary">
+            Yopish
+          </button>
+        </div>
+      </Modal>
+    )
+  }
+
+  // QR ma'lumotlari uchun aktual obyekt
+  const currentQR = qrData || qr
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title={`QR Kod Tahrirlash: ${qr.title}`}
+      title={`QR Kod Tahrirlash: ${currentQR.title || 'Nomsiz'}`}
       size="lg"
     >
+      {/* Debug panel - production da olib tashlash */}
+      <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
+        <strong>Debug Info:</strong> QR ID: {qrId}, Title: {currentQR.title}, Loading: {loading.toString()}
+      </div>
+
       {loading ? (
         <div className="flex justify-center py-8">
           <LoadingSpinner size="lg" />
@@ -118,7 +229,7 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
           {/* Tab Content */}
           {activeTab === 'content' ? (
             <QRContentEditor
-              qr={qrData || qr}
+              qr={currentQR}
               onUpdate={handleContentUpdate}
             />
           ) : (
@@ -128,18 +239,22 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                 <div className="flex-shrink-0">
                   <div className="w-48 h-48 bg-gray-50 rounded-lg flex items-center justify-center">
                     <img
-                      src={qrService.getQRImageUrl(qr._id)}
-                      alt={`QR Code for ${qr.title}`}
+                      src={qrService.getQRImageUrl(qrId)}
+                      alt={`QR Code for ${currentQR.title}`}
                       className="w-44 h-44 object-contain"
+                      onError={(e) => {
+                        console.error('QR image load error for ID:', qrId)
+                        e.target.style.display = 'none'
+                      }}
                     />
                   </div>
                 </div>
                 
                 <div className="flex-1 space-y-4">
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900">{qr.title}</h3>
-                    {qr.description && (
-                      <p className="text-gray-600 mt-1">{qr.description}</p>
+                    <h3 className="text-lg font-medium text-gray-900">{currentQR.title}</h3>
+                    {currentQR.description && (
+                      <p className="text-gray-600 mt-1">{currentQR.description}</p>
                     )}
                   </div>
 
@@ -147,24 +262,24 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                     <div>
                       <span className="text-gray-500">Status:</span>
                       <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        qr.status === 'active' 
+                        currentQR.status === 'active' 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-red-100 text-red-800'
                       }`}>
-                        {qr.status === 'active' ? 'Faol' : 'O\'chirilgan'}
+                        {currentQR.status === 'active' ? 'Faol' : 'O\'chirilgan'}
                       </span>
                     </div>
                     <div>
                       <span className="text-gray-500">Scan Count:</span>
-                      <span className="ml-2 font-medium">{qrData?.scanCount || qr.scanCount || 0}</span>
+                      <span className="ml-2 font-medium">{currentQR.scanCount || 0}</span>
                     </div>
                     <div>
                       <span className="text-gray-500">Yaratilgan:</span>
-                      <span className="ml-2">{formatDate(qr.createdAt)}</span>
+                      <span className="ml-2">{formatDate(currentQR.createdAt)}</span>
                     </div>
                     <div>
                       <span className="text-gray-500">O\'zgartirilgan:</span>
-                      <span className="ml-2">{formatDate(qrData?.updatedAt || qr.updatedAt)}</span>
+                      <span className="ml-2">{formatDate(currentQR.updatedAt)}</span>
                     </div>
                   </div>
 
@@ -196,41 +311,41 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
                   <div>
                     <span className="text-gray-600">Scan URL:</span>
                     <div className="mt-1 p-2 bg-white rounded border text-xs font-mono break-all">
-                      {qrService.getScanUrl(qr._id)}
+                      {qrService.getScanUrl(qrId)}
                     </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Preview URL:</span>
                     <div className="mt-1 p-2 bg-white rounded border text-xs font-mono break-all">
-                      {qrService.getPreviewUrl(qr._id)}
+                      {qrService.getPreviewUrl(qrId)}
                     </div>
                   </div>
                   <div>
                     <span className="text-gray-600">QR Image URL:</span>
                     <div className="mt-1 p-2 bg-white rounded border text-xs font-mono break-all">
-                      {qrService.getQRImageUrl(qr._id)}
+                      {qrService.getQRImageUrl(qrId)}
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Content Info */}
-              {qrData?.contentType && (
+              {currentQR.contentType && currentQR.contentType !== 'empty' && (
                 <div className="bg-blue-50 rounded-lg p-4">
                   <h4 className="font-medium text-blue-900 mb-2">Joriy Content</h4>
                   <div className="text-sm text-blue-800">
-                    <p><strong>Tur:</strong> {qrData.contentType}</p>
-                    {qrData.contentType === 'text' && qrData.text && (
-                      <p><strong>Matn:</strong> {qrData.text.substring(0, 100)}...</p>
+                    <p><strong>Tur:</strong> {currentQR.contentType}</p>
+                    {currentQR.contentType === 'text' && currentQR.text && (
+                      <p><strong>Matn:</strong> {currentQR.text.substring(0, 100)}...</p>
                     )}
-                    {qrData.contentType === 'link' && qrData.url && (
-                      <p><strong>URL:</strong> {qrData.url}</p>
+                    {currentQR.contentType === 'link' && currentQR.url && (
+                      <p><strong>URL:</strong> {currentQR.url}</p>
                     )}
-                    {qrData.contentType === 'file' && qrData.fileName && (
-                      <p><strong>Fayl:</strong> {qrData.fileName}</p>
+                    {currentQR.contentType === 'file' && currentQR.fileName && (
+                      <p><strong>Fayl:</strong> {currentQR.fileName}</p>
                     )}
-                    {qrData.contentType === 'contact' && qrData.contactName && (
-                      <p><strong>Kontakt:</strong> {qrData.contactName}</p>
+                    {currentQR.contentType === 'contact' && currentQR.contactName && (
+                      <p><strong>Kontakt:</strong> {currentQR.contactName}</p>
                     )}
                   </div>
                 </div>
