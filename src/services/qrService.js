@@ -1,5 +1,6 @@
 import api from './api'
 const baseURl = import.meta.env.VITE_API_BASE_URL
+
 export const qrService = {
   // QR CRUD operations
   async createQR(data) {
@@ -15,6 +16,31 @@ export const qrService = {
   async getQRById(id) {
     const response = await api.get(`/api/qr/${id}`)
     return response.data
+  },
+
+  // Debug version - development uchun
+  async debugGetQRById(id) {
+    console.log('🔍 Debug: Getting QR by ID:', id)
+    
+    try {
+      const response = await api.get(`/api/qr/${id}`)
+      const qrData = response.data
+      
+      console.log('✅ Debug: QR data received:', {
+        id: qrData.id || qrData._id,
+        title: qrData.title,
+        contentType: qrData.currentContent?.type,
+        hasContent: !!qrData.currentContent,
+        createdAt: qrData.createdAt,
+        updatedAt: qrData.updatedAt,
+        fullData: qrData
+      })
+      
+      return qrData
+    } catch (error) {
+      console.error('❌ Debug: Error getting QR:', error)
+      throw error
+    }
   },
 
   async updateQRContent(id, contentData) {
