@@ -70,21 +70,42 @@ const QREdit = ({ isOpen, onClose, qr, onSuccess }) => {
       return
     }
 
+    console.log('Updating content for QR ID:', qrId)
+    console.log('Content data to send:', contentData)
+
     try {
       const response = await qrService.updateQRContent(qrId, contentData)
+      console.log('Content update response:', response)
       
       // Backend {success: true, qr: {...}} formatda javob qaytaradi  
-      const qrData = response?.qr || response
+      const qrData = response?.qr || response?.data || response
       
       if (qrData) {
         setQrData(qrData)
         showSuccess('Content muvaffaqiyatli yangilandi')
-        onSuccess(qrData)
+        onSuccess && onSuccess(qrData)
       } else {
         throw new Error('Server javob bermadi')
       }
     } catch (error) {
-      showError(error.message || 'Content yangilashda xatolik')
+      console.error('Content update failed:', error)
+      console.error('Error details:', {
+        message: error.message,
+        status: error.response?.status,
+        response: error.response?.data
+      })
+      
+      let errorMessage = 'Content yangilashda xatolik'
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      showError(errorMessage)
       throw error
     }
   }

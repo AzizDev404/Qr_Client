@@ -1,4 +1,4 @@
-// components/qr/QRContentEditor.jsx - Backend formatiga moslashtirilgan
+// components/qr/QRContentEditor.jsx - Backend formatiga mos
 import React, { useState, useEffect } from 'react'
 import { CONTENT_TYPES, CONTENT_TYPE_LABELS } from '../../utils/constants'
 import TextContentForm from '../forms/TextContentForm'
@@ -52,44 +52,57 @@ const QRContentEditor = ({ qr, onUpdate }) => {
     }
   ]
 
-  const handleUpdate = async (contentData) => {
-    if (!onUpdate || typeof onUpdate !== 'function') {
-      console.error('QRContentEditor: onUpdate callback not provided')
-      setError('Update funksiyasi mavjud emas')
-      return
-    }
+const handleUpdate = async (contentData) => {
+  if (!onUpdate || typeof onUpdate !== 'function') {
+    console.error('QRContentEditor: onUpdate callback not provided')
+    setError('Update funksiyasi mavjud emas')
+    return
+  }
 
-    setIsLoading(true)
-    setError(null)
-    setSuccess(null)
-    
-    try {
-      console.log('QRContentEditor: Updating content:', {
-        type: selectedType,
-        data: contentData
-      })
-      
-      // Backend format - contentType va content data alohida
-      const updateData = {
+  setIsLoading(true)
+  setError(null)
+  setSuccess(null)
+
+  try {
+    let updatePayload
+
+    // Agar fayl kelsa -> FormData bo‘lib yuboriladi
+    if (contentData instanceof FormData) {
+      updatePayload = contentData
+    } else {
+      updatePayload = {
         contentType: selectedType,
         ...contentData
       }
-      
-      await onUpdate(updateData)
-      
-      console.log('QRContentEditor: Content update successful')
-      setSuccess('Content muvaffaqiyatli yangilandi!')
-      
-      // Success message ni 3 soniyadan keyin olib tashlash
-      setTimeout(() => setSuccess(null), 3000)
-      
-    } catch (error) {
-      console.error('QRContentEditor: Content update failed:', error)
-      setError(error.message || 'Content yangilashda xatolik')
-    } finally {
-      setIsLoading(false)
     }
+
+    console.log('QRContentEditor: Final update payload:', updatePayload)
+
+    await onUpdate(updatePayload)
+
+    console.log('QRContentEditor: Content update successful')
+    setSuccess('Content muvaffaqiyatli yangilandi!')
+
+    setTimeout(() => setSuccess(null), 3000)
+  } catch (error) {
+    console.error('QRContentEditor: Content update failed:', error)
+
+    let errorMessage = 'Content yangilashda xatolik'
+    if (error?.response?.data?.message) {
+      errorMessage = error.response.data.message
+    } else if (error?.response?.data?.error) {
+      errorMessage = error.response.data.error
+    } else if (error?.response?.data) {
+      errorMessage = `Server error: ${JSON.stringify(error.response.data)}`
+    } else if (error?.message) {
+      errorMessage = error.message
+    }
+
+    setError(errorMessage)
+  } finally {
+    setIsLoading(false)
   }
+}
 
   const handleTypeChange = (newType) => {
     console.log('QRContentEditor: Content type changed:', newType)
@@ -106,7 +119,7 @@ const QRContentEditor = ({ qr, onUpdate }) => {
     const normalizedQR = {
       ...qr,
       // Backend currentContent ichidagi fieldlarni root levelga ko'chirish
-      contentType: currentContent.type,
+      contentType: currentContent.type || selectedType,
       text: currentContent.text,
       url: currentContent.url,
       linkTitle: currentContent.linkTitle,
@@ -170,15 +183,6 @@ const QRContentEditor = ({ qr, onUpdate }) => {
 
   return (
     <div className="space-y-6">
-      {/* Debug Info - Production da olib tashlash */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mb-4 p-3 bg-gray-100 rounded text-xs">
-          <strong>Debug:</strong> QR ID: {qr.id || qr._id}, 
-          Current Type: {selectedType}, 
-          Backend Type: {qr?.currentContent?.type}
-        </div>
-      )}
-
       {/* Success Message */}
       {success && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
